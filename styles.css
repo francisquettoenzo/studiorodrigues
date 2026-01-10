@@ -7,6 +7,13 @@
     box-sizing: border-box;
 }
 
+/* Small safety + overflow fixes to avoid lateral cut on phones (e.g. iPhone) */
+html, body {
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden; /* evita corte lateral */
+}
+
 /* =====================================================
    BASE / BODY
 ===================================================== */
@@ -19,11 +26,23 @@ body {
 
 /* =====================================================
    LAYOUT CONTAINER
+   - add safe-area support for iPhone notch
 ===================================================== */
 .container {
     max-width: 1200px;
     margin: 0 auto;
+
+    /* fallback padding, then prefer safe-area insets when available */
     padding: 0 20px;
+    padding-left: calc(20px + env(safe-area-inset-left));
+    padding-right: calc(20px + env(safe-area-inset-right));
+}
+
+/* Make images globally responsive to avoid overflow */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
 }
 
 /* =====================================================
@@ -32,6 +51,8 @@ body {
 header {
     position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     width: 100%;
     z-index: 1000;
 
@@ -40,6 +61,7 @@ header {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* ensure container inside navbar respects safe-area */
 .navbar .container {
     display: flex;
     justify-content: space-between;
@@ -53,7 +75,9 @@ header {
 }
 
 .logo img {
-    height: 100px;
+    /* reduce large fixed height and make responsive */
+    max-height: 64px;
+    height: auto;
     width: auto;
 }
 
@@ -62,6 +86,9 @@ header {
     display: flex;
     list-style: none;
     gap: 30px;
+    align-items: center;
+    flex-wrap: nowrap;
+    /* allow shrinking on small screens */
 }
 
 .nav-links a {
@@ -69,6 +96,7 @@ header {
     text-decoration: none;
     font-size: 16px;
     transition: color 0.3s, transform 0.3s;
+    white-space: nowrap;
 }
 
 .nav-links a:hover {
@@ -83,6 +111,7 @@ header {
     background-color: #000;
     color: #fff;
 
+    /* reduce huge padding on small screens via media queries below */
     padding: 200px 0 150px;
     margin-top: 70px;
 }
@@ -122,6 +151,7 @@ header {
     overflow: hidden;
 
     transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    min-width: 0; /* allow shrinking on small screens */
 }
 
 /* Ícones do botão */
@@ -180,7 +210,7 @@ header {
 
 /* Active */
 .animated-button:active {
-    scale: 0.95;
+    transform: scale(0.95);
     box-shadow: 0 0 0 4px #fff;
 }
 
@@ -253,17 +283,21 @@ header {
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 
+/* Use auto-fit with a smaller minimum to avoid overflow on narrow screens */
 .services-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 120px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 80px; /* reduced from 120 to avoid large overflow */
+    justify-items: center; /* center cards when fewer columns */
 }
 
 /* ===============================
    SERVICE CARD
 ================================ */
 .service-card {
-    width: 400px;
+    /* don't force fixed width; allow to shrink on mobile while capping max width */
+    width: 100%;
+    max-width: 400px;
     padding: 30px;
 
     display: flex;
@@ -277,6 +311,8 @@ header {
 
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.55);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    margin: 0 auto; /* center when single column */
 }
 
 /* Hover do card */
@@ -284,9 +320,6 @@ header {
     transform: translateY(-10px);
     box-shadow: 0 35px 60px rgba(0, 0, 0, 0.65);
 }
-
-
-
 
 /* ===============================
    SERVICE ICON
@@ -408,7 +441,7 @@ header {
     transition: 
         color 0.4s ease,
         transform 0.4s ease,
-        box-shadow 0.4s ease,
+        box-shadow 0.4s ease;
 }
 
 /* efeito de luz passando */
@@ -488,10 +521,33 @@ footer p {
 /* =====================================================
    RESPONSIVE
 ===================================================== */
+@media (max-width: 1024px) {
+    .services-grid { gap: 60px; }
+    .hero { padding: 140px 0 100px; }
+}
+
 @media (max-width: 768px) {
-    .nav-links { gap: 15px; }
+    .nav-links { gap: 15px; justify-content: center; flex-wrap: wrap; }
     .hero-title { font-size: 36px; }
     .hero-subtitle { font-size: 18px; }
     .section-title { font-size: 32px; }
-    .services-grid { grid-template-columns: 1fr; gap: 20px; }
+    .services-grid { grid-template-columns: 1fr; gap: 32px; }
+    .service-card { padding: 22px; }
+    .logo img { max-height: 56px; }
+    .hero { padding: 120px 0 80px; }
 }
+
+@media (max-width: 420px) {
+    /* extra small screens (iPhone size) adjustments: */
+    .navbar .container { gap: 8px; flex-direction: column; align-items: center; }
+    .nav-links { gap: 12px; justify-content: center; }
+    .logo img { max-height: 48px; }
+    .hero { padding: 90px 0 60px; margin-top: 64px; }
+    .animated-button { padding: 12px 18px; font-size: 14px; }
+    .services-grid { gap: 20px; padding: 0 8px; }
+    .service-card { padding: 18px; }
+    .service-header h3 { font-size: 20px; }
+    .service-card p { font-size: 15px; }
+}
+
+/* End of file */
