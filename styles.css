@@ -535,6 +535,7 @@ footer p {
     .service-card { padding: 22px; }
     .logo img { max-height: 56px; }
     .hero { padding: 120px 0 80px; }
+   .animated-button { display: none}
 }
 
 @media (max-width: 420px) {
@@ -548,6 +549,7 @@ footer p {
     .service-card { padding: 18px; }
     .service-header h3 { font-size: 20px; }
     .service-card p { font-size: 15px; }
+   .animated-button { display: none}
 }
 
 /* End of file */
