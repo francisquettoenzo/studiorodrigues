@@ -133,7 +133,7 @@ header {
 ===================================================== */
 .animated-button {
     position: relative;
-    display: flex;
+    display: none;
     align-items: center;
     gap: 4px;
 
